@@ -22,7 +22,13 @@ exports.getData = async (req, res) => {
 
 exports.insertData = async (req, res) => {
     try {
-        await DataModel.insertMany(jsonData);
+        const options = { upsert: true };
+
+        for (const doc of jsonData) {
+            const filter = { title: doc.title };
+            const update = { $set: doc };
+            await DataModel.updateOne(filter, update, options);
+        }
 
         res.status(200).json({
             success: true,
